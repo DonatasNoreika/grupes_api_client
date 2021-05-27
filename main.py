@@ -54,6 +54,6 @@ my_token = '70fa39ec0c8b854f8e331e5fdb4452f2d67b5b03'
 
 # Gauti grupes ( su token)
 
-headers = {'Authorization': f'Token {my_token}'}
-r = requests.get("http://127.0.0.1:8000/bands", headers=headers)
-print(r.text)
+# headers = {'Authorization': f'Token {my_token}'}
+# r = requests.get("http://127.0.0.1:8000/bands", headers=headers)
+# print(r.text)
