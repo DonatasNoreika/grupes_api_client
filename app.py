@@ -20,7 +20,7 @@ db = SQLAlchemy(app)
 # pilnas kelias iki šio failo.
 
 if __name__ == '__main__':
-    from forms import BandForm, RegistracijosForma, PrisijungimoForma
+    from forms import BandForm, RegistracijosForma, PrisijungimoForma, PaskyrosAtnaujinimoForma
 
 login_manager = LoginManager(app)
 login_manager.login_view = 'registruotis'
@@ -53,7 +53,7 @@ def bands():
 def add_band():
     form = BandForm()
     if form.validate_on_submit():
-        my_token = request.form['token']
+        my_token = current_user.token
         name = request.form['name']
         data = {'name': name}
         headers = {'Authorization': f'Token {my_token}'}
@@ -91,6 +91,23 @@ def prisijungti():
         else:
             flash('Prisijungti nepavyko. Patikrinkite el. paštą ir slaptažodį', 'danger')
     return render_template('prisijungti.html', title='Prisijungti', form=form)
+
+@app.route("/paskyra", methods=['GET', 'POST'])
+@login_required
+def paskyra():
+    form = PaskyrosAtnaujinimoForma()
+    if form.validate_on_submit():
+        current_user.vardas = form.vardas.data
+        current_user.el_pastas = form.el_pastas.data
+        current_user.token = form.token.data
+        db.session.commit()
+        flash('Tavo paskyra atnaujinta!', 'success')
+        return redirect(url_for('paskyra'))
+    elif request.method == 'GET':
+        form.vardas.data = current_user.vardas
+        form.el_pastas.data = current_user.el_pastas
+        form.token.data = current_user.token
+    return render_template('paskyra.html', title='Account', form=form)
 
 @app.route("/atsijungti")
 def atsijungti():
